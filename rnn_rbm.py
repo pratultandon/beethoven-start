@@ -105,7 +105,12 @@ def rnnrbm():
     tf.assign(BH_t, tf.tile(BH_t, [size_bt, 1]))
     tf.assign(BV_t, tf.tile(BV_t, [size_bt, 1]))
     #Scan through the rnn and generate the value for each hidden node in the batch
+    print "Shape of u0: {}".format(u0.get_shape())
+    print "Shape of x: {}".format(x.get_shape())
+
     u_t  = tf.scan(rnn_recurrence, x, initializer=u0)
+    print "Shape of u_t: {}".format(u_t.get_shape())
+
     #Scan through the rnn and generate the visible and hidden biases for each RBM in the batch
     BV_t = tf.reshape(tf.scan(visible_bias_recurrence, u_t, tf.zeros([1, n_visible], tf.float32)), [size_bt, n_visible])
     BH_t = tf.reshape(tf.scan(hidden_bias_recurrence, u_t, tf.zeros([1, n_hidden], tf.float32)), [size_bt, n_hidden])
