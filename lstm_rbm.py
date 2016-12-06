@@ -68,7 +68,7 @@ class LSTMNet():
         return self.W, self.Wuh, self.Wuv, self.Wvu, self.Wuu, self.bh, self.bv, self.bu, self.u0
 
     def lstm_recurrence(self, u_tm1, sl):
-        print "got here"
+        print "sl dims: {}".format(sl.get_shape())
         sl  =  tf.reshape(sl, [1, n_visible])
         out, new_state = tf.nn.dynamic_rnn(self.cell, sl, initial_state=self.initial_state)
         self.initial_state = new_state
