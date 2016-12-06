@@ -24,20 +24,31 @@ primer_song = 'Pop_Music_Midi/elise.midi' #The path to the song to use to prime 
 def main(saved_weights_path):
     # First, build model then get pointers to params
     neural_net = lstm_rbm.LSTMNet()
+    print "constructed neural net"
+
     tvars = neural_net.training_vars()
     x = neural_net.x
 
+    print "got vars"
+
     saver = tf.train.Saver(tvars)
+
+    print "created saver"
 
     song_primer = midi_manipulation.get_song(primer_song)
 
+    print "got primer"
+
     with tf.Session() as sess:
         init = tf.initialize_all_variables()
+        print "initialized variables"
         sess.run(init)
         saver.restore(sess, saved_weights_path) #load the saved weights of the network
         # #We generate num songs
         for i in tqdm(range(num)):
+            print "about to run session"
             generated_music = sess.run(neural_net.generate(300), feed_dict={x: song_primer}) #Prime the network with song primer and generate an original song
+            print "session finished"
             new_song_path = "music_outputs/{}_{}".format(i, primer_song.split("/")[-1]) #The new song will be saved here
             midi_manipulation.write_song(new_song_path, generated_music)
 
