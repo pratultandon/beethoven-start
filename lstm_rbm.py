@@ -69,43 +69,28 @@ class LSTMNet():
 
         Cstar = tf.tanh(self.bC + tf.matmul(inputs, self.WC))
 
-        print "getting new state"
         new_state = tf.mul(ft, old_state) + tf.mul(it, Cstar)
 
         ot = tf.sigmoid(self.bo + tf.matmul(inputs, self.Wu_o))
         ut = tf.mul(ot, tf.tanh(new_state))
 
-        print "finishing with function"
-
         return ut, new_state
 
     def lstm_recurrence(self, utm1, sl):
-        print "started running"
         sl = tf.reshape(sl, [1, n_visible])
 
         inputs = tf.concat(1, [utm1, sl])
 
-        print "concatenated inputs"
-
         ft = tf.sigmoid(self.bf + tf.matmul(inputs, self.Wu_f))
         it = tf.sigmoid(self.bi + tf.matmul(inputs, self.Wu_i))
-
-        print "forget and remember"
 
         Cstar = tf.tanh(self.bC + tf.matmul(inputs, self.WC))
         new_state = tf.mul(ft, self.curr_lstm_state) + tf.mul(it, Cstar)
 
-        print "got new state"
-
         ot = tf.sigmoid(self.bo + tf.matmul(inputs, self.Wu_o))
         ut = tf.mul(ot, tf.tanh(new_state))
 
-        print "setting new state"
-
         self.curr_lstm_state = new_state
-
-        "Returning ut"
-
         return ut
 
     def rnn_recurrence(self, u_tm1, sl):
@@ -125,7 +110,6 @@ class LSTMNet():
         return bh_t       
 
     def generate_recurrence(self, count, k, u_tm1, primer, x, music, state):
-        print "Running generate_recurrence"
         #This function builds and runs the gibbs steps for each RBM in the chain to generate music
         #Get the bias vectors from the current state of the RNN
         bv_t = tf.add(self.bv, tf.matmul(u_tm1, self.Wuv))
@@ -135,14 +119,12 @@ class LSTMNet():
         x_out = RBM.gibbs_sample(primer, self.W, bv_t, bh_t, k=25)
         
         #Update the RNN hidden state based on the musical output and current hidden state.
-        print "About to run lstm_recurrence"
         u_t, new_state = self.lstm_recurrence_adjusted(u_tm1, x_out, state)
         
         # u_t  = (tf.tanh(self.bu + tf.matmul(x_out, self.Wvu) + tf.matmul(u_tm1, self.Wuu)))
 
         #Add the new output to the musical piece
         music = tf.concat(0, [music, x_out])
-        print "about to return from gen recur"
         return count+1, k, u_t, x_out, x, music, new_state
 
     def generate(self, num, prime_length=100):
