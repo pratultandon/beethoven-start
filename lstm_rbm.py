@@ -14,7 +14,7 @@ import midi_manipulation
 """
 
 note_range         = midi_manipulation.span #The range of notes that we can produce
-n_visible          = 2*note_range*midi_manipulation.num_timesteps #The size of each data vector and the size of the RBM visible layer
+n_visible          = 3*note_range*midi_manipulation.num_timesteps #The size of each data vector and the size of the RBM visible layer
 n_hidden           = 50 #The size of the RBM hidden layer
 n_hidden_recurrent = 100 #The size of each RNN hidden layer
 
